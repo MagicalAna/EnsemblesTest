@@ -1,0 +1,26 @@
+PODS:
+  - MagicalRecord (2.3.2):
+    - MagicalRecord/Core (= 2.3.2)
+  - MagicalRecord/Core (2.3.2)
+  - ReactiveCocoa (12.0.0):
+    - ReactiveSwift (~> 7.0)
+  - ReactiveSwift (7.1.1)
+
+DEPENDENCIES:
+  - MagicalRecord
+  - ReactiveCocoa
+
+SPEC REPOS:
+  trunk:
+    - MagicalRecord
+    - ReactiveCocoa
+    - ReactiveSwift
+
+SPEC CHECKSUMS:
+  MagicalRecord: 53bed74b4323b930992a725be713e53b37d19755
+  ReactiveCocoa: 5d10386f0ce09f922006efbf784881c5fade27c5
+  ReactiveSwift: 477d3f5bc2eb3cbbba1c1636505752b83bef93b1
+
+PODFILE CHECKSUM: aa20f7ffa28ce02948494b0074a47572cfac0008
+
+COCOAPODS: 1.11.3

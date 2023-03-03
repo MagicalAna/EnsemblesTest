@@ -25,16 +25,16 @@ class EnsemblesManager: NSObject, CDEPersistentStoreEnsembleDelegate {
     func setup() {
         CDESetCurrentLoggingLevel(CDELoggingLevel.verbose.rawValue)
         
-        let model = NSManagedObjectModel.mr_newManagedObjectModelNamed("totowallet.momd")!
+        let model = NSManagedObjectModel.mr_newManagedObjectModelNamed("EnsemblesTest.momd")!
         NSManagedObjectModel.mr_setDefaultManagedObjectModel(model)
         MagicalRecord.setShouldAutoCreateManagedObjectModel(false)
         MagicalRecord.setupAutoMigratingCoreDataStack()
         
-        let modelURL = Bundle.main.url(forResource: "totowallet", withExtension: "momd")
+        let modelURL = Bundle.main.url(forResource: "EnsemblesTest", withExtension: "momd")
         let storeURL = NSPersistentStore.mr_defaultLocalStoreUrl()
         
-        cloudFileSystem = CDEICloudFileSystem(ubiquityContainerIdentifier: "iCloud.come.zigeng.totofinance.new")
-        ensemble = CDEPersistentStoreEnsemble(ensembleIdentifier: "totowallet", persistentStore: storeURL, managedObjectModelURL: modelURL!, cloudFileSystem: cloudFileSystem)
+        cloudFileSystem = CDEICloudFileSystem(ubiquityContainerIdentifier: "iCloud.com.ziheng.CoreDataTest")
+        ensemble = CDEPersistentStoreEnsemble(ensembleIdentifier: "Model", persistentStore: storeURL, managedObjectModelURL: modelURL!, cloudFileSystem: cloudFileSystem)
         ensemble.delegate = self
         
         NotificationCenter.default.addObserver(self,
@@ -45,9 +45,6 @@ class EnsemblesManager: NSObject, CDEPersistentStoreEnsembleDelegate {
                                                selector: #selector(cloudDataDidDownload(_:)),
                                                name: NSNotification.Name.CDEICloudFileSystemDidDownloadFiles,
                                                object: nil)
-        
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(test), name: NSNotification.Name.NSManagedObjectContextDidSave, object: nil)
     }
     
     
@@ -95,22 +92,25 @@ class EnsemblesManager: NSObject, CDEPersistentStoreEnsembleDelegate {
     }
     
     
-    @objc func test() {
-        sync(completion: nil)
-    }
-    
-    
     // MARK: - CDEPersistentStoreEnsembleDelegate
     func persistentStoreEnsemble(_ ensemble: CDEPersistentStoreEnsemble, didSaveMergeChangesWith notification: Notification) {
         let rootContext = NSManagedObjectContext.mr_rootSaving()
         rootContext.performAndWait {
             rootContext.mergeChanges(fromContextDidSave: notification)
         }
-        
+
         let mainContext = NSManagedObjectContext.mr_default()
         mainContext.performAndWait {
             mainContext.mergeChanges(fromContextDidSave: notification)
         }
+        
+        let inserted: Set<NSManagedObject> = (notification.userInfo?["inserted"] as? Set<NSManagedObject>) ?? []
+        let updated: Set<NSManagedObject> = (notification.userInfo?["updated"] as? Set<NSManagedObject>) ?? []
+        let deleted: Set<NSManagedObject> = (notification.userInfo?["deleted"] as? Set<NSManagedObject>) ?? []
+        let insertCount = inserted.count
+        let updateCount = updated.count
+        let deleteCount = deleted.count
+        print("SYNC", #function, "didSaveMergeChangesWith insert \(insertCount)  updated \(updateCount)  delete \(deleteCount)")
     }
     
     
@@ -120,11 +120,11 @@ class EnsemblesManager: NSObject, CDEPersistentStoreEnsembleDelegate {
     
     
     func persistentStoreEnsembleWillImportStore(_ ensemble: CDEPersistentStoreEnsemble) {
-        print("-----persistentStoreEnsembleWillImportStore")
+        print("SYNC", #function)
     }
     
     func persistentStoreEnsembleDidImportStore(_ ensemble: CDEPersistentStoreEnsemble) {
-        print("-----persistentStoreEnsembleDidImportStore")
+        print("SYNC", #function)
     }
     
     func persistentStoreEnsemble(_ ensemble: CDEPersistentStoreEnsemble, shouldSaveMergedChangesIn savingContext: NSManagedObjectContext, reparationManagedObjectContext reparationContext: NSManagedObjectContext) -> Bool {
@@ -132,22 +132,21 @@ class EnsemblesManager: NSObject, CDEPersistentStoreEnsembleDelegate {
     }
     
     func persistentStoreEnsemble(_ ensemble: CDEPersistentStoreEnsemble, didFailToSaveMergedChangesIn savingContext: NSManagedObjectContext, error: Error, reparationManagedObjectContext reparationContext: NSManagedObjectContext) -> Bool {
-        print("-----didFailToSaveMergedChangesIn")
+        print("SYNC", #function, error)
         return false
     }
     
     func persistentStoreEnsemble(_ ensemble: CDEPersistentStoreEnsemble, willMergeChangesForEntity entity: NSEntityDescription) {
         let log = "willMergeChangesForEntity \(entity.name ?? "")"
-        print("-----" + log)
+        print("SYNC", log)
     }
     
     func persistentStoreEnsemble(_ ensemble: CDEPersistentStoreEnsemble, didMergeChangesForEntity entity: NSEntityDescription) {
         let log = "didMergeChangesForEntity \(entity.name ?? "")"
-        print("-----" + log)
+        print("SYNC", log)
     }
     
     func persistentStoreEnsemble(_ ensemble: CDEPersistentStoreEnsemble, didDeleechWithError error: Error) {
-        print("-----" + error.localizedDescription)
-//        dismantle()
+        print("SYNC", "\(#function) \(error)")
     }
 }

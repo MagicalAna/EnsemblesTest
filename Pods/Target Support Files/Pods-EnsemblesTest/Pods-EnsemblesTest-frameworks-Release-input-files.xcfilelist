@@ -1,0 +1,4 @@
+${PODS_ROOT}/Target Support Files/Pods-EnsemblesTest/Pods-EnsemblesTest-frameworks.sh
+${BUILT_PRODUCTS_DIR}/MagicalRecord/MagicalRecord.framework
+${BUILT_PRODUCTS_DIR}/ReactiveCocoa/ReactiveCocoa.framework
+${BUILT_PRODUCTS_DIR}/ReactiveSwift/ReactiveSwift.framework
